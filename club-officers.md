@@ -8,8 +8,8 @@ sidebar_sort_order: 15
 
 ![Club Officers](../assets/img/club-officers.jpg)
 
-**Club President** – George Edwards
+**Club President** – Gene Dixon
 
-**Club Treasurer** – David Poss
+**Club Treasurer** – Michael Vernon
 
 **Advisory Board Members** – TBD
