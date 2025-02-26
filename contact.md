@@ -13,4 +13,4 @@ Savannah River Woodturners Club
 Evans, Georgia
 
 Telephone:
-David Poss 706-373-6975 – Club Secretary/Treasurer
+Mike Vernon 706-341-3999 – Club Secretary/Treasurer
