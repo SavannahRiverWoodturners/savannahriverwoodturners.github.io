@@ -27,6 +27,6 @@ Saturday, To be announced – 09:00 am
 
 Saturday, January 17, 2026 – 9:00 am
 
-Saturday, February 20, 2026 – 9:00 am
+Saturday, February 21, 2026 – 9:00 am
 
 Saturday, March 21, 2026 – 9:00 am
