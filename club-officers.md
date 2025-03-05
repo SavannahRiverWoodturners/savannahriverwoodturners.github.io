@@ -12,4 +12,4 @@ sidebar_sort_order: 15
 
 **Club Treasurer** – Michael Vernon
 
-**Advisory Board Members** – TBD
+**Advisory Board Members** – Evan Bahr and Dave Poss
