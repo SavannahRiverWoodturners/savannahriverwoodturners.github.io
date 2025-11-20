@@ -8,7 +8,7 @@ permalink: /submit-minutes/
 
 Club members can submit meeting minutes for publication on the website.
 
-[Click here to submit meeting minutes](https://github.comSavannahRiverWoodturners/savannahriverwoodturners.github.io/issues/new?template=blog-post.yml)
+[Click here to submit meeting minutes](https://github.com/SavannahRiverWoodturners/savannahriverwoodturners.github.io/issues/new?template=blog-post.yml)
 
 ## Instructions:
 
