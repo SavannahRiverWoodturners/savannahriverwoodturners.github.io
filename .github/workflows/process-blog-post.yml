@@ -1,0 +1,226 @@
+name: Process Blog Post Submission
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  process-blog-post:
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'approved'
+    
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        
+      - name: Parse issue body
+        id: parse
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body;
+            
+            // Extract form values using regex patterns
+            const meetingDateMatch = body.match(/### Meeting Date\s*\n\s*(.+)/);
+            const authorMatch = body.match(/### Author Name\s*\n\s*(.+)/);
+            const titleMatch = body.match(/### Meeting Title\s*\n\s*(.+)/);
+            const contentMatch = body.match(/### Meeting Content\s*\n\s*([\s\S]+?)(?=\n### |$)/);
+            const imagesMatch = body.match(/### Images with Descriptions\s*\n\s*([\s\S]+?)(?=\n---|$)/);
+            
+            const meetingDate = meetingDateMatch ? meetingDateMatch[1].trim() : '';
+            const author = authorMatch ? authorMatch[1].trim() : '';
+            const postTitle = titleMatch ? titleMatch[1].trim() : '';
+            const content = contentMatch ? contentMatch[1].trim() : '';
+            const images = imagesMatch ? imagesMatch[1].trim() : '';
+            
+            // Convert meeting date to filename format (YYYY-MM-DD)
+            const date = new Date();
+            const filename = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            
+            core.setOutput('meeting_date', meetingDate);
+            core.setOutput('author', author);
+            core.setOutput('post_title', postTitle);
+            core.setOutput('content', content);
+            core.setOutput('images', images);
+            core.setOutput('filename', filename);
+            core.setOutput('issue_number', issue.number);
+            
+      - name: Download images from issue
+        id: download
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const images = `${{ steps.parse.outputs.images }}`;
+            const fs = require('fs');
+            const path = require('path');
+            const https = require('https');
+            
+            // Extract image URLs from markdown
+            const imageUrls = [...images.matchAll(/!\[.*?\]\((https:\/\/[^\)]+)\)/g)];
+            
+            if (imageUrls.length === 0) {
+              console.log('No images found');
+              return '';
+            }
+            
+            // Create images directory if it doesn't exist
+            const imageDir = path.join('assets', 'images', 'posts', '${{ steps.parse.outputs.filename }}');
+            fs.mkdirSync(imageDir, { recursive: true });
+            
+            // Download each image
+            const downloadPromises = imageUrls.map((match, index) => {
+              const url = match[1];
+              const ext = path.extname(new URL(url).pathname) || '.jpg';
+              const filename = `image-${index + 1}${ext}`;
+              const filepath = path.join(imageDir, filename);
+              
+              return new Promise((resolve, reject) => {
+                const file = fs.createWriteStream(filepath);
+                https.get(url, (response) => {
+                  response.pipe(file);
+                  file.on('finish', () => {
+                    file.close();
+                    resolve({ url, filepath, filename });
+                  });
+                }).on('error', (err) => {
+                  fs.unlink(filepath, () => {});
+                  reject(err);
+                });
+              });
+            });
+            
+            const downloaded = await Promise.all(downloadPromises);
+            core.setOutput('image_dir', imageDir);
+            core.setOutput('image_count', downloaded.length);
+            
+      - name: Create blog post markdown file
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            const filename = '${{ steps.parse.outputs.filename }}';
+            const meetingDate = '${{ steps.parse.outputs.meeting_date }}';
+            const author = '${{ steps.parse.outputs.author }}';
+            const postTitle = '${{ steps.parse.outputs.post_title }}';
+            const content = `${{ steps.parse.outputs.content }}`;
+            const images = `${{ steps.parse.outputs.images }}`;
+            
+            // Process images section to convert URLs to local paths with captions
+            let processedContent = content;
+            
+            if (images && images.trim() !== '_No response_' && images.trim() !== '') {
+              const lines = images.split('\n');
+              let imageMarkdown = '\n\n';
+              let imageIndex = 1;
+              
+              for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // If line contains an image
+                if (line.match(/!\[.*?\]\(https:\/\//)) {
+                  const ext = '.jpg'; // Default extension
+                  const localPath = `/assets/images/posts/${filename}/image-${imageIndex}${ext}`;
+                  
+                  // Get the description from the next line
+                  let description = '';
+                  if (i + 1 < lines.length) {
+                    const nextLine = lines[i + 1].trim();
+                    if (nextLine && !nextLine.match(/!\[.*?\]\(/)) {
+                      description = nextLine;
+                      i++; // Skip the description line in next iteration
+                    }
+                  }
+                  
+                  imageMarkdown += `![${description}](${localPath})\n`;
+                  if (description) {
+                    imageMarkdown += `*${description}*\n\n`;
+                  }
+                  
+                  imageIndex++;
+                }
+              }
+              
+              processedContent += imageMarkdown;
+            }
+            
+            // Create front matter
+            const frontMatter = `---
+layout: post
+title: "${postTitle}"
+date: ${filename}
+author: ${author}
+categories: [meeting-minutes]
+---
+
+`;
+            
+            const postContent = frontMatter + processedContent;
+            
+            // Write to _posts directory
+            const postsDir = '_posts';
+            if (!fs.existsSync(postsDir)) {
+              fs.mkdirSync(postsDir, { recursive: true });
+            }
+            
+            const filepath = path.join(postsDir, `${filename}-meeting-minutes.md`);
+            fs.writeFileSync(filepath, postContent);
+            
+            console.log(`Created blog post: ${filepath}`);
+            
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add _posts/ assets/images/
+          git commit -m "Add blog post: ${{ steps.parse.outputs.post_title }}"
+          git push
+          
+      - name: Comment on issue and close
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issueNumber = ${{ steps.parse.outputs.issue_number }};
+            const filename = '${{ steps.parse.outputs.filename }}';
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: '✅ Your blog post has been published! It will be live on the website shortly.\n\nView it at: https://savannahriverwoodturners.org/'
+            });
+            
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              state: 'closed',
+              labels: ['approved', 'published']
+            });
+
+  deny-blog-post:
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'denied'
+    
+    steps:
+      - name: Notify submitter and close
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = context.payload.issue;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: '❌ This blog post submission has been denied. Please check with the reviewer for feedback and feel free to submit again with corrections.'
+            });
+            
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              state: 'closed'
+            });
