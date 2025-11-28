@@ -21,9 +21,9 @@ Saturday, September 20, 2025 – 9:00 am
 
 Saturday, October 18, 2025 – 9:00 am
 
-Saturday, November 15, 2025- 9:00 am
+Saturday, November 15, 2025 - 9:00 am
 
-Saturday, December  13,  12:00 pm - Christmas Party
+Saturday, December  13, 2025 -  12:00 pm - Christmas Party
 
 Saturday, January 17, 2026 – 9:00 am
 
