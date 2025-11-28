@@ -23,7 +23,7 @@ Saturday, October 18, 2025 – 9:00 am
 
 Saturday, November 15, 2025- 9:00 am
 
-Saturday, December (TBA) – 09:00 am
+Saturday, December  13,  12:00 pm - Christmas Party
 
 Saturday, January 17, 2026 – 9:00 am
 
