@@ -8,33 +8,33 @@ sidebar_sort_order: 20
 
 Saturday, December  13, 2025 -  12:00 pm - Christmas Party
 
-Saturday. January 17, 2026 - 9:00 am
+Saturday, January 17, 2026 - 9:00 am
 
-Saturday. February 21, 2026 - 9:00 am
+Saturday, February 21, 2026 - 9:00 am
 
-Saturday. March 21, 2026 - 9:00 am
+Saturday, March 21, 2026 - 9:00 am
 
-Saturday. April 18, 2026 - 9:00 am
+Saturday, April 18, 2026 - 9:00 am
 
-Saturday. May 16, 2026 - 9:00 am
+Saturday, May 16, 2026 - 9:00 am
 
-Saturday. June 20, 2026 - 9:00 am
+Saturday, June 20, 2026 - 9:00 am
 
-Saturday. July 18, 2026 - 9:00 am
+Saturday, July 18, 2026 - 9:00 am
 
-Saturday. August 15, 2026 - 9:00 am
+Saturday, August 15, 2026 - 9:00 am
 
-Saturday. September 19, 2026 - 9:00 am
+Saturday, September 19, 2026 - 9:00 am
 
-Saturday. October 17 , 2026 - 9:00 am
+Saturday, October 17 , 2026 - 9:00 am
 
-Saturday. November 21, 2026 - 9:00 am
+Saturday, November 21, 2026 - 9:00 am
 
-Saturday. December TBA, 2026 - 9:00 am
+Saturday, December TBA, 2026 - 9:00 am
 
-Saturday. January 16, 2027 - 9:00 am
+Saturday, January 16, 2027 - 9:00 am
 
-Saturday. February 20, 2027 - 9:00 am
+Saturday, February 20, 2027 - 9:00 am
 
 ## Past Meetings
 
